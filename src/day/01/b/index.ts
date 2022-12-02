@@ -3,7 +3,8 @@ import { input as elfCalories } from '../input';
 const topThreeCals = elfCalories
   .split('\n\n')
   .map(
-    cals => cals.split('\n')
+    cals => cals
+      .split('\n')
       .reduce((p, c) => p + parseInt(c), 0),
   )
   .sort((a, b) => a > b ? -1 : 0)
