@@ -1,7 +1,10 @@
 import { isNaN } from 'lodash';
-import { example as notes} from '../input';
+import lcm from 'compute-lcm';
+import { input as notes} from '../input';
+
 
 const notesByMonkey = notes.split('\n\n');
+const DIVIDEND = 3;
 
 class Monkey {
   items: number[];
@@ -23,10 +26,10 @@ class Monkey {
     this.testFalseMonkey = parseInt(inputByLine[5].split(' ').pop());
   }
 
-  startRound() {
+  startRound(lcm: number) {
     this.items = this.items.map(i => {
       this.inspectionCount++;
-      return this.runOperation(i);
+      return this.runOperation(i) % lcm;
     });
   }
 
@@ -54,14 +57,16 @@ class Monkey {
 
 class Monkeys {
   monkeys: Monkey[] = [];
+  lcm: number;
 
   constructor(input: string[]) {
     input.forEach(m => this.monkeys.push(new Monkey(m)));
+    this.lcm = lcm(this.monkeys.map(m => m.testDividend));
   }
 
   playRound() {
     this.monkeys.forEach(monkey => {
-      monkey.startRound();
+      monkey.startRound(this.lcm);
       monkey.items.forEach(item => {
         const monkeyIndex = monkey.getNewMonkey(item);
         this.monkeys[monkeyIndex].items.push(item);
@@ -78,16 +83,14 @@ class Monkeys {
 
   get monkeyBusinessLevel() {
     const activity = this.monkeys.map(monkey => monkey.inspectionCount).sort((a, b) => b - a);
-    console.log('>> TESTING >> activity', activity);
     return activity[0] * activity[1];
   }
 }
 
 const monkeys = new Monkeys(notesByMonkey);
-monkeys.playRounds(20);
+monkeys.playRounds(10000);
 
+console.log('What is the level of monkey business after 10000 rounds?', monkeys.monkeyBusinessLevel);
 
-console.log('What is the level of monkey business after 20 rounds of stuff-slinging simian shenanigans?', monkeys.monkeyBusinessLevel);
-
-// answer 14490137489 (too low)
+// answer 30599555965
 // example answer 2713310158
